@@ -16,8 +16,8 @@ os.makedirs("ppt", exist_ok=True)
 os.makedirs("analysis", exist_ok=True)
 
 # Load API keys and configurations
-GEMINI_API_KEY = r"AIzaSyD7xswZmrdGOTc-bySUDqjccuNNPMbD254"  # Set in terminal using export GEMINI_API_KEY="your_api_key"
-GOOGLE_CLOUD_TTS_KEY_PATH = r"C:\Users\Asus\OneDrive\Desktop\Projects\Cactus\bold-vortex-449510-e3-c547f537c293.json"  # Path to service account JSON file
+GEMINI_API_KEY = r"AIzaSyD7mrdGOTc-bccuNNPMbD254"  # Set in terminal using export GEMINI_API_KEY="your_api_key"
+GOOGLE_CLOUD_TTS_KEY_PATH = r"C:\Users\Asus\OneDrive\Desktop\Projects\Cactus\bold-vortex-e3-c547f537c293.json"  # Path to service account JSON file
 
 # Initialize Google Cloud TTS client
 def initialize_google_tts_client():
