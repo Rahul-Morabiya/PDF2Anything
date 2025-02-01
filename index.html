@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF2Anything</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #fff;
+            transition: all 0.3s;
+        }
+        h1 {
+            text-align: center;
+            padding-top: 80px;
+            font-size: 3.5rem;
+            color: #4A90E2;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: .15em solid #4A90E2;
+            animation: typing 4s steps(40) 1s normal forwards, blinkCaret 0.75s step-end infinite;
+        }
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+        @keyframes blinkCaret {
+            50% {
+                border-color: transparent;
+            }
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 50px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li {
+            font-size: 1.2rem;
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease;
+        }
+        nav ul li a:hover {
+            background-color: #FF6347;
+            color: #fff;
+            transform: scale(1.1);
+        }
+        nav .logo {
+            font-size: 1.7rem;
+            font-weight: bold;
+            color: #FF6347;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+        }
+        section {
+            padding: 100px 20px;
+            text-align: center;
+            margin: 80px auto;
+            max-width: 1200px;
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            transition: all 0.3s;
+        }
+        section:hover {
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+        }
+        section h2 {
+            color: #FF6347;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .form-container {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-container input,
+        .form-container select,
+        .form-container button {
+            padding: 12px;
+            margin: 10px;
+            border: 2px solid #444;
+            border-radius: 5px;
+            background: #333;
+            color: #fff;
+            width: 100%;
+            max-width: 400px;
+            font-size: 1.1rem;
+            transition: 0.3s ease-in-out;
+        }
+        .form-container input[type="file"] {
+            width: 50%;
+        }
+        .form-container select {
+            background-color: #222;
+            color: #FF6347;
+            font-weight: 600;
+            border: 2px solid #FF6347;
+        }
+        .form-container button {
+            background-color: #FF6347;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #4A90E2;
+            transform: scale(1.05);
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+        .result a {
+            color: #4A90E2;
+            text-decoration: none;
+        }
+        .result a:hover {
+            text-decoration: underline;
+        
+        }
+        nav .logo {
+            font-size: 1.7rem;
+            font-weight: bold;
+            color: #FF6347;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+        }
+
+        nav .logo img {
+            height: 50px; /* Adjust logo height */
+            margin-right: 10px; /* Space between image and text */
+        }
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 3s;
+        }
+
+        @keyframes fadein {
+            from {
+                bottom: 0;
+                opacity: 0;
+            }
+
+            to {
+                bottom: 30px;
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+        #bg-video,
+        #bg-video-2 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50vh;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(40%);
+        }
+
+        #bg-video-2 {
+            top: 50vh;
+        }
+
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .theme-switcher:hover {
+            background-color: #FF6347;
+        }
+
+        .theme-switcher i {
+            color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <video id="bg-video" autoplay muted loop>
+        <source src="vecteezy_data-neural-network-ai-technology-cloud-computing-bits_21723025.mp4" type="video/webm">
+        Your browser does not support the video tag.
+    </video>
+    <video id="bg-video-2" autoplay muted loop>
+        <source src="vecteezy_data-neural-network-ai-technology-cloud-computing-bits_21723025.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <nav>
+        <div class="logo">
+            <img src="image.png" alt="Logo">
+        </div>
+        <ul>
+            <li><a href="#podcast-section">Podcast Generator</a></li>
+            <li><a href="#ppt-section">PPT Generator</a></li>
+            <li><a href="#analysis-section">PDF Analysis</a></li>
+        </ul>
+    </nav>
+    <div class="theme-switcher" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+    </div>
+    <h1>Convert PDF to Anything & Everything</h1>
+    <section id="podcast-section">
+        <h2>Podcast Generator</h2>
+        <div class="form-container">
+            <form id="podcastForm" enctype="multipart/form-data">
+                <input type="file" name="file" required>
+                <select name="audience" required>
+                    <option value="scientific">Scientific Audience</option>
+                    <option value="general">General Audience</option>
+                </select>
+                <select name="length" required>
+                    <option value="1min">1 Minute</option>
+                    <option value="2min" selected>2 Minutes</option>
+                    <option value="4min">4 Minutes</option>
+                </select>
+                <select name="tone" required>
+                    <option value="formal">Formal</option>
+                    <option value="informal">Informal</option>
+                </select>
+                <button type="submit">Generate Podcast</button>
+            </form>
+        </div>
+        <div id="podcast-result" class="result"></div>
+    </section>
+    <section id="ppt-section">
+        <h2>PPT Generator</h2>
+        <div class="form-container">
+            <form id="pptForm" enctype="multipart/form-data">
+                <input type="file" name="file" required>
+                <select name="num_slides" required>
+                    <option value="5">5 Slides</option>
+                    <option value="10">10 Slides</option>
+                    <option value="15">15 Slides</option>
+                </select>
+                <select name="theme" required>
+                    <option value="default">Default Theme</option>
+                    <option value="professional">Professional Theme</option>
+                </select>
+                <select name="audience" required>
+                    <option value="scientific">Scientific Audience</option>
+                    <option value="general">General Audience</option>
+                </select>
+                <button type="submit">Generate PPT</button>
+            </form>
+        </div>
+        <div id="ppt-result" class="result"></div>
+    </section>
+    <section id="analysis-section">
+        <h2>PDF Analysis</h2>
+        <div class="form-container">
+            <form id="analysisForm" enctype="multipart/form-data">
+                <input type="file" name="file" required>
+                <select name="analysis_type" required>
+                    <option value="summary">Summary</option>
+                    <option value="thorough_analysis">Thorough Analysis</option>
+                    <option value="citations">Citations</option>
+                    <option value="literature_review">Literature Review</option>
+                    <option value="rejection_checker">Rejection Checker</option>
+                </select>
+                <button type="submit">Generate Analysis</button>
+            </form>
+        </div>
+        <div id="analysis-result" class="result"></div>
+    </section>
+    <div id="toast"></div>
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('dark-theme');
+            const icon = document.querySelector('.theme-switcher i');
+            if (body.classList.contains('dark-theme')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+        function showToast(message) {
+            var toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = "show";
+            setTimeout(function () {
+                toast.className = toast.className.replace("show", "");
+            }, 4000);
+        }
+        document.getElementById('podcastForm').onsubmit = async function (event) {
+            event.preventDefault();
+            showToast("Generating podcast...");
+            let formData = new FormData(event.target);
+            let response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            let data = await response.json();
+            if (response.ok) {
+                document.getElementById('podcast-result').innerHTML = `Podcast created successfully! <a href="/download/${data.audio_url}" target="_blank">Download Podcast</a>`;
+                showToast("Podcast generated successfully!");
+            } else {
+                showToast("Error: " + data.error);
+            }
+        };
+        document.getElementById('pptForm').onsubmit = async function (event) {
+            event.preventDefault();
+            showToast("Generating PPT...");
+            let formData = new FormData(event.target);
+            let response = await fetch('/upload_ppt', {
+                method: 'POST',
+                body: formData
+            });
+            let data = await response.json();
+            if (response.ok) {
+                document.getElementById('ppt-result').innerHTML = `PPT created successfully! <a href="/download/ppt/${data.ppt_url}" target="_blank">Download PPT</a>`;
+                showToast("PPT generated successfully!");
+            } else {
+                showToast("Error: " + data.error);
+            }
+        };
+        document.getElementById('analysisForm').onsubmit = async function (event) {
+            event.preventDefault();
+            showToast("Generating analysis...");
+            let formData = new FormData(event.target);
+            let response = await fetch('/upload_analysis', {
+                method: 'POST',
+                body: formData
+            });
+            let data = await response.json();
+            if (response.ok) {
+                document.getElementById('analysis-result').innerHTML = `Analysis generated successfully! <a href="/${data.analysis_url}" target="_blank">Download Analysis</a><br><pre>${data.analysis_result}</pre>`;
+                showToast("Analysis generated successfully!");
+            } else {
+                showToast("Error: " + data.error);
+            }
+        };
+    </script>
+</body>
+</html>
+
+
